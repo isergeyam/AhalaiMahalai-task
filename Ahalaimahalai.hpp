@@ -10,7 +10,7 @@ template <size_t Num1, size_t Num2, size_t... Numbs,
 constexpr size_t MyXor() {
   return Num1 ^ Num2 ^ MyXor<Numbs...>();
 }
-template <size_t X> constexpr size_t FindFIrstBit() {
+/*template <size_t X> constexpr size_t FindFIrstBit() {
   size_t X1 = X;
   X1 |= X1 >> 1;
   X1 |= X1 >> 2;
@@ -18,12 +18,19 @@ template <size_t X> constexpr size_t FindFIrstBit() {
   X1 |= X1 >> 8;
   X1 |= X1 >> 16;
   return X1 - (X1 >> 1);
-}
+}*/
 template <bool B, size_t F, size_t S> struct MyCondition {
   static constexpr size_t value = F;
 };
 template <size_t F, size_t S> struct MyCondition<false, F, S> {
   static constexpr size_t value = S;
+};
+template <size_t X, int N> struct FindFirstBit {
+  static constexpr size_t value =
+      MyCondition<X >= (1 << N), 1 << N, FindFirstBit<X, N - 1>::value>::value;
+};
+template <size_t X> struct FindFirstBit<X, -1> {
+  static constexpr size_t value = 0;
 };
 template <size_t N, size_t Head, size_t... Tail> struct FirstWithBit {
   static constexpr size_t value =
@@ -46,8 +53,8 @@ template <size_t B> struct MyOperator : std::false_type {};
 template <> struct MyOperator<0> : std::true_type {};
 template <size_t... Numbs> struct AhalaiMahalai {
   static constexpr size_t __xor = MyXor<Numbs...>();
-  static constexpr size_t who = MyCondition<__xor, 1, 2>::value;
-  static constexpr size_t __find_first_bit = FindFIrstBit<__xor>();
+  static constexpr size_t who = MyCondition<__xor, 0, 1>::value + 1;
+  static constexpr size_t __find_first_bit = FindFirstBit<__xor, 31>::value;
   static constexpr size_t whence =
       MyCondition<!bool(__xor), 0,
                   FirstWithBit<__find_first_bit, Numbs...>::value>::value;

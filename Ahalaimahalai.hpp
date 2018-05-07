@@ -25,14 +25,6 @@ template <bool B, size_t F, size_t S> struct MyCondition {
 template <size_t F, size_t S> struct MyCondition<false, F, S> {
   static constexpr size_t value = S;
 };
-/*template <size_t X, size_t Num> struct FirstBitPos {
-  static constexpr size_t value =
-      MyCondition<!bool(X & (1 << Num)), FirstBitPos<X, Num + 1>::value,
-                  Num>::value;
-};
-template <size_t X> struct FirstBitPos<X, 32> {
-  static constexpr size_t value = 0;
-};*/
 template <size_t N, size_t Head, size_t... Tail> struct FirstWithBit {
   static constexpr size_t value =
       MyCondition<!bool(Head & N), FirstWithBit<N, Tail...>::value,
@@ -56,8 +48,6 @@ template <size_t... Numbs> struct AhalaiMahalai {
   static constexpr size_t __xor = MyXor<Numbs...>();
   static constexpr size_t who = MyCondition<__xor, 1, 2>::value;
   static constexpr size_t __find_first_bit = FindFIrstBit<__xor>();
-  // static constexpr size_t __first_bit_pos = FirstBitPos<__find_first_bit,
-  // 0>::value;
   static constexpr size_t whence =
       MyCondition<!bool(__xor), 0,
                   FirstWithBit<__find_first_bit, Numbs...>::value>::value;
